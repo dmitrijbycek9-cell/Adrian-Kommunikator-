@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adrian Kommunikator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #f5f5f5;
+            padding: 10px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin: 10px 0;
+            font-size: 24px;
+        }
+
+        .anzeige {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        #text {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+            min-height: 30px;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        button {
+            border: none;
+            border-radius: 10px;
+            padding: 15px 25px;
+            font-size: 20px;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        .btn-vorlesen {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn-loeschen {
+            background: #f44336;
+            color: white;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .kachel {
+            aspect-ratio: 1;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: 4px solid white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: transform 0.2s;
+            user-select: none;
+        }
+
+        .kachel:active {
+            transform: scale(0.95);
+        }
+
+        .kachel.gewaehlt {
+            border-color: #333;
+            transform: scale(1.05);
+        }
+
+        /* Farben */
+        .orange { background: #FF9800; }
+        .blau { background: #2196F3; }
+        .gelb { background: #FFEB3B; color: #333; }
+        .hellblau { background: #03A9F4; }
+        .gruen { background: #4CAF50; }
+        .rosa { background: #E91E63; }
+        .rot { background: #f44336; }
+        .lila { background: #9C27B0; }
+
+        .icon {
+            font-size: 50px;
+            margin-bottom: 5px;
+        }
+
+        .wort {
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .gelb .wort {
+            color: #333;
+            text-shadow: none;
+        }
+
+        .hinweis {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        @media (max-width: 400px) {
+            .icon { font-size: 40px; }
+            .wort { font-size: 16px; }
+        }
+    </style>
+</head>
+<body>
+    <h1>🧸 Adrian sagt:</h1>
+    
+    <div class="anzeige">
+        <div id="text">Tippe auf ein Bild...</div>
+        <div class="buttons">
+            <button class="btn-vorlesen" onclick="vorlesen()">🔊 Vorlesen</button>
+            <button class="btn-loeschen" onclick="loeschen()">🗑️ Löschen</button>
+        </div>
+    </div>
+
+    <div class="grid">
+        <div class="kachel orange" onclick="waehlen('Ich will essen', this)">
+            <div class="icon">🍎</div>
+            <div class="wort">ESSEN</div>
+        </div>
+
+        <div class="kachel blau" onclick="waehlen('Ich will trinken', this)">
+            <div class="icon">🥛</div>
+            <div class="wort">TRINKEN</div>
+        </div>
+
+        <div class="kachel gelb" onclick="waehlen('Ich muss auf Toilette', this)">
+            <div class="icon">🚽</div>
+            <div class="wort">WC</div>
+        </div>
+
+        <div class="kachel hellblau" onclick="waehlen('Ich will baden', this)">
+            <div class="icon">🛁</div>
+            <div class="wort">BADEN</div>
+        </div>
+
+        <div class="kachel gruen" onclick="waehlen('Ich will spielen', this)">
+            <div class="icon">🧸</div>
+            <div class="wort">SPIELEN</div>
+        </div>
+
+        <div class="kachel rosa" onclick="waehlen('Ich brauche Mama', this)">
+            <div class="icon">👩</div>
+            <div class="wort">MAMA</div>
+        </div>
+
+        <div class="kachel rot" onclick="waehlen('Mir tut etwas weh', this)">
+            <div class="icon">🚨</div>
+            <div class="wort">TUT WEH</div>
+        </div>
+
+        <div class="kachel lila" onclick="waehlen('Ich will mehr', this)">
+            <div class="icon">➕</div>
+            <div class="wort">MEHR</div>
+        </div>
+    </div>
+
+    <div class="hinweis">
+        💡 Tipp: Halte das Handy quer für größere Bilder!
+    </div>
+
+    <script>
+        let aktuellerSatz = "";
+        let letzteKachel = null;
+
+        function waehlen(text, element) {
+            aktuellerSatz = text;
+            document.getElementById('text').textContent = text;
+            
+            // Visuelles Feedback
+            if (letzteKachel) {
+                letzteKachel.classList.remove('gewaehlt');
+            }
+            element.classList.add('gewaehlt');
+            letzteKachel = element;
+            
+            // Sofort vorlesen
+            vorlesen();
+            
+            // Vibration
+            if (navigator.vibrate) {
+                navigator.vibrate(50);
+            }
+        }
+
+        function vorlesen() {
+            if (aktuellerSatz === "") return;
+            
+            window.speechSynthesis.cancel();
+            
+            const utterance = new SpeechSynthesisUtterance(aktuellerSatz);
+            utterance.lang = 'de-DE';
+            utterance.rate = 0.8;
+            utterance.pitch = 1.0;
+            
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function loeschen() {
+            aktuellerSatz = "";
+            document.getElementById('text').textContent = "Tippe auf ein Bild...";
+            if (letzteKachel) {
+                letzteKachel.classList.remove('gewaehlt');
+                letzteKachel = null;
+            }
+        }
+
+        // Tastatur-Steuerung für Tests
+        document.addEventListener('keydown', (e) => {
+            const kacheln = document.querySelectorAll('.kachel');
+            const tasten = ['1','2','3','4','5','6','7','8'];
+            const index = tasten.indexOf(e.key);
+            if (index !== -1 && index < kacheln.length) {
+                kacheln[index].click();
+            }
+            if (e.key === ' ') vorlesen();
+            if (e.key === 'Escape') loeschen();
+        });
+    </script>
+</body>
+</html>
